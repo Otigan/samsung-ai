@@ -1,6 +1,8 @@
 import tensorflow as tf
 from PIL import Image
 from PIL import ImageFile
+from sklearn.preprocessing import StandardScaler
+import numpy as np
 
 from database.data_base import Calories, init_base
 
@@ -55,25 +57,31 @@ y_train = y_train[:500]
 x_test = x_test[:200]
 y_test = y_test[:200]
 
+
+norm_train = np.linalg.norm(y_train)
+norm_test = np.linalg.norm(y_test)
+
+y_train = y_train/norm_train
+y_test = y_test/norm_test
+
 x_train[:] = [i/255 for i in x_train]
 x_test[:] = [i/255 for i in x_test]
 
-print(x_test[:3])
 
-train_dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train)).batch(2)
-test_dataset = tf.data.Dataset.from_tensor_slices((x_test, y_test)).batch(2)
+train_dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train))
+test_dataset = tf.data.Dataset.from_tensor_slices((x_test, y_test))
 
 BATCH_SIZE = 1
 SHUFFLE_BUFFER_SIZE = 10
 
-train_dataset = train_dataset.shuffle(SHUFFLE_BUFFER_SIZE).batch(BATCH_SIZE).batch(2)
-test_dataset = test_dataset.batch(BATCH_SIZE).batch(2)
+train_dataset = train_dataset.shuffle(SHUFFLE_BUFFER_SIZE).batch(BATCH_SIZE)
+test_dataset = test_dataset.batch(BATCH_SIZE)
 
 model = tf.keras.models.Sequential([
     tf.keras.layers.Conv2D(3, 3, activation='relu', padding='same', input_shape=(224, 224, 3)),
     tf.keras.layers.Conv2D(3, 3, activation='relu', padding='same'),
     tf.keras.layers.Conv2D(3, 3, activation='relu', padding='same'),
-    tf.keras.layers.MaxPool2D(2),
+    tf.keras.layers.MaxPool2D(2, ),
     tf.keras.layers.BatchNormalization(axis=1),
 
     tf.keras.layers.Conv2D(3, 3, activation='relu', padding='same', input_shape=(224, 224, 3)),
@@ -98,4 +106,4 @@ model.compile(
     metrics=['mae']
 )
 
-model.fit(train_dataset.batch(2), validation_data=test_dataset.batch(2), epochs=60)
+model.fit(train_dataset, validation_data=test_dataset, epochs=60)
