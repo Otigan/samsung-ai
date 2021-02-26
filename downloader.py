@@ -1,4 +1,4 @@
-from database.data_base import Calories, init_base
+from utils.data_base import Calories, init_base
 import pandas as pd
 import os
 import time

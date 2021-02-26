@@ -1,5 +1,8 @@
-from database.data_base import Calories, init_base
+from .data_base import Calories, init_base
 import tensorflow as tf
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+import numpy as np
+from sklearn.utils import shuffle
 
 from PIL import Image
 from PIL import ImageFile
@@ -29,13 +32,14 @@ def load_data(path):
 
 load_data('C:/Project/Python/pyCharmTest2/Pictures')
 
-images_list = images_list[:128]
-calories_list = calories_list[:128]
+images_list = np.array(images_list)
+calories_list = np.array(calories_list)
 
-print(len(images_list))
-print(len(calories_list))
+print(images_list.shape)
+print(calories_list.shape)
 
-dataset = tf.data.Dataset.from_tensor_slices((images_list,calories_list)).batch(16)
+image_generator = ImageDataGenerator(rescale=1/255)
+train_dataset = image_generator.flow(x=images_list, y=calories_list, batch_size=32)
 
 model = tf.keras.models.Sequential([
     tf.keras.layers.Conv2D(6, 3, activation='selu', padding='same', input_shape=(224,224,3)),
@@ -65,7 +69,7 @@ model.compile(
         metrics=['mae']
     )
 
-model.fit(dataset, epochs=60)
+model.fit(train_dataset, epochs=60)
 
 predicted = model.predict(tf.data.Dataset.from_tensor_slices([images_list[4]]).batch(1))
 print(f'predicted={predicted}   true={calories_list[4]}')
