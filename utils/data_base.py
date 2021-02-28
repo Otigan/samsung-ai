@@ -13,6 +13,7 @@ class Recipe(Base):
     total_time = Column(String)
     keywords = Column(Text)
     ingredients = Column(Text)
+    ingredients_quantity = Column(String)
     fat_content = Column(Float)
     saturated_fat_content = Column(Float)
     cholesterol_content = Column(Float)

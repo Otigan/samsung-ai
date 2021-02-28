@@ -25,7 +25,7 @@ columns = ['Images', 'Calories', 'RecipeCategory', 'TotalTime', 'Keywords',
            'RecipeIngredientParts', 'FatContent', 'SaturatedFatContent',
            'CholesterolContent', 'SodiumContent', 'CarbohydrateContent',
            'FiberContent', 'SugarContent', 'ProteinContent',
-           'RecipeInstructions', 'Name']
+           'RecipeInstructions', 'RecipeIngredientQuantities', 'Name']
 file = pd.read_parquet('recipes.parquet', columns=columns)
 file = file[file.Images.str.len() != 0]
 file = file[file.Keywords.str.len() !=0]
@@ -39,6 +39,7 @@ file_categories = file.RecipeCategory.to_numpy()
 file_total_time = file.TotalTime.to_numpy()
 file_keywords = file.Keywords.to_numpy() # may cause a problem. Includes 'NA'
 file_ingredients = file.RecipeIngredientParts.to_numpy()
+file_ingredients_quantity = file.RecipeIngredientQuantities.to_numpy()
 file_fat_content = file.FatContent.to_numpy()
 file_saturated_fat_content = file.SaturatedFatContent.to_numpy()
 file_cholesterol_content = file.CholesterolContent.to_numpy()
@@ -71,6 +72,12 @@ for i in range(len(file_images)):
         temp_ingredients = temp_ingredients[:-1]
         file_ingredients[i] = temp_ingredients
 
+        temp_ingredients_quantity = ''
+        for j in range(len(file_ingredients_quantity[i])):
+            temp_ingredients_quantity += f'{file_ingredients_quantity[i][j]}_'
+        temp_ingredients_quantity = temp_ingredients_quantity[:-1]
+        file_ingredients_quantity[i] = temp_ingredients_quantity
+
         temp_instructions = ''
         for j in range(len(file_instructions[i])):
             temp_instructions += f'{file_instructions[i][j]}_'
@@ -85,6 +92,7 @@ def start_downloading(position = 0):
             try:
                 recipe_to_db = Recipe(id=i+1, calories=file_calories[i], total_time=file_total_time[i],
                           keywords=file_keywords[i], ingredients=file_ingredients[i],
+                          ingredients_quantity=file_ingredients_quantity[i],
                           fat_content=file_fat_content[i],
                           saturated_fat_content=file_saturated_fat_content[i],
                           cholesterol_content=file_cholesterol_content[i],
