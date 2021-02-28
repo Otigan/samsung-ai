@@ -18,14 +18,15 @@ def create_model():
 
 
 loader = Loader(path=f'{os.getcwd()}/Pictures',
-                batch=1600,
+                batch=200,
                 validation_split=0.2,
-                num_epochs=20)
+                num_epochs=20,
+                column='calories')
 model = create_model()
 while loader.is_going:
     x, y , val_x, val_y= loader.load_next_data()
     tf.keras.backend.clear_session()
-    model.fit([x],[y], validation_data=(val_x, val_y), batch_size=32, epochs=1) #should be 1 epoch here. Real number of epochs defines by Loader parameters
+    model.fit([x],[y], validation_data=(val_x, val_y), batch_size=10, epochs=1) #should be 1 epoch here. Real number of epochs defines by Loader parameters
     weights = model.get_weights()
     model = create_model()
     model.set_weights(weights) # preventing memory leak,  creating new model with old weights

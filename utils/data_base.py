@@ -11,8 +11,8 @@ class Recipe(Base):
     id = Column(Integer, primary_key=True)
     calories = Column(Float)
     total_time = Column(String)
-    keywords = Column(String)
-    ingredients = Column(String)
+    keywords = Column(Text)
+    ingredients = Column(Text)
     fat_content = Column(Float)
     saturated_fat_content = Column(Float)
     cholesterol_content = Column(Float)
@@ -21,14 +21,14 @@ class Recipe(Base):
     fiber_content = Column(Float)
     sugar_content = Column(Float)
     protein_content = Column(Float)
-    instructions = Column(String)
+    instructions = Column(Text)
     name = Column(String)
-    images = relationship('Image')
+    images = relationship('FoodImage')
 
 
 
-class Image(Base):
-    __tablename__ = 'Image'
+class FoodImage(Base):
+    __tablename__ = 'FoodImage'
     id = Column(Integer, primary_key=True)
     recipe_id = Column(Integer, ForeignKey('Recipe.id'))
 

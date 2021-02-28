@@ -1,4 +1,4 @@
-from .data_base import Calories, init_base
+from .data_base import FoodImage, Recipe, init_base
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import numpy as np
@@ -10,7 +10,7 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 import os
 
 class Loader():
-    def __init__(self, path, batch, num_epochs, validation_split=0.0, table=Calories, column='calories'):
+    def __init__(self, path, batch, num_epochs, validation_split=0.0, column='calories'):
         self.db_session = init_base()
         self.images_list = []
         self.labels_list = []
@@ -21,7 +21,6 @@ class Loader():
         self.batch = batch
         self.num_epochs = num_epochs
         self.validation_split = validation_split
-        self.table = table
         self.column = column
         self.is_going = True
         self.dataset_size = 0
@@ -55,10 +54,28 @@ class Loader():
                     image_name = img_path.split('/')[-1]
                     image_id = image_name.split('e')[-1].split('.')[0]
 
-                    row = self.db_session.query(self.table).filter_by(id=int(image_id)).first()
+                    foreign_key = self.db_session.query(FoodImage).filter_by(id=int(image_id)).first().recipe_id
+                    recipe = self.db_session.query(Recipe).filter_by(id=foreign_key).first()
                     if self.column == 'calories':
-                        self.labels_list.append(row.calories)
-                    #if self.column == 'other' ....
+                        self.labels_list.append(recipe.calories)
+                    elif self.column == 'total_time':
+                        self.labels_list.append(recipe.total_time)
+                    elif self.column == 'fat_content':
+                        self.labels_list.append(recipe.fat_content)
+                    elif self.column == 'saturated_fat_content':
+                        self.labels_list.append(recipe.saturated_fat_content)
+                    elif self.column == 'cholesterol_content':
+                        self.labels_list.append(recipe.cholesterol_content)
+                    if self.column == 'sodium_content':
+                        self.labels_list.append(recipe.sodium_content)
+                    if self.column == 'carbohydrate_content':
+                        self.labels_list.append(recipe.carbohydrate_content)
+                    if self.column == 'fiber_content':
+                        self.labels_list.append(recipe.fiber_content)
+                    if self.column == 'sugar_content':
+                        self.labels_list.append(recipe.sugar_content)
+                    if self.column == 'protein_content':
+                        self.labels_list.append(recipe.protein_content)
                     self.current_image_index += 1
                 temp_image_index += 1
         if self.current_image_index == self.dataset_size-1:
