@@ -1,15 +1,37 @@
 from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy_utils import create_database, database_exists
 BASE_PATH = 'sqlite:///database.db'
 Base = declarative_base()
 
 
-class Calories(Base):
-    __tablename__ = 'Calories'
+class Recipe(Base):
+    __tablename__ = 'Recipe'
     id = Column(Integer, primary_key=True)
     calories = Column(Float)
+    total_time = Column(String)
+    keywords = Column(String)
+    ingredients = Column(String)
+    fat_content = Column(Float)
+    saturated_fat_content = Column(Float)
+    cholesterol_content = Column(Float)
+    sodium_content = Column(Float)
+    carbohydrate_content = Column(Float)
+    fiber_content = Column(Float)
+    sugar_content = Column(Float)
+    protein_content = Column(Float)
+    instructions = Column(String)
+    name = Column(String)
+    images = relationship('Image')
+
+
+
+class Image(Base):
+    __tablename__ = 'Image'
+    id = Column(Integer, primary_key=True)
+    recipe_id = Column(Integer, ForeignKey('Recipe.id'))
+
 
 def init_base():
     if not database_exists(BASE_PATH):
@@ -19,5 +41,3 @@ def init_base():
     Session = sessionmaker(bind=engine)
     session = Session()
     return session
-
-
