@@ -12,40 +12,37 @@ import os
 class Loader():
     def __init__(self, path, batch, num_epochs, validation_split=0.0, column='calories'):
         self.db_session = init_base()
-        self.images_list = []
-        self.labels_list = []
-        self.current_image_index = 0
-        self.current_loop = 1
-        self.current_walkthrough = 1
+        self.images_list = [] #Листы для хранения загруженного куска датасета
+        self.labels_list = [] #
+        self.current_image_index = 0 #Номер рисунка, загружаемого в данный момент
+        self.current_loop = 1 #Текущий номер батча загрузки
+        self.current_walkthrough = 1 #Текущий проход по датасету (эпоха)
         self.path = path
-        self.batch = batch
-        self.num_epochs = num_epochs
+        self.batch = batch # Количество рисунков, загружаемых за раз
+        self.num_epochs = num_epochs #Количество эпох (проходов по датасету)
         self.validation_split = validation_split
-        self.column = column
-        self.is_going = True
+        self.column = column #Колонка базы данных, загружаемая в лейбл лист
+        self.is_going = True #Нужное количество эпох (проходов по датасету) не прошло
         self.dataset_size = 0
         for dir in os.listdir(self.path):
             dir_path = os.path.join(self.path, dir)
             for img in os.listdir(dir_path):
-                self.dataset_size += 1
+                self.dataset_size += 1 #Цикл для определения размера датасета
 
 
     def load_next_data(self):
         self.images_list = []
         self.labels_list = []
-        temp_image_index = 0
-        if self.current_image_index == 0:
+        temp_image_index = 0 # индекс, обнуляемы при каждом цикле загрузки,
+                            # для сравнения с последним загруженным элементом
+        if self.current_image_index == 0: #Проход по датасету начался сначала
             print(f'------------ walkthrough {self.current_walkthrough} --------------------')
         print(f'epoch {self.current_loop}')
         for dir in os.listdir(self.path):
-            if self.current_image_index >= self.current_loop * self.batch:
-                break
             dir_path = os.path.join(self.path, dir)
             for img in os.listdir(dir_path):
-                if self.current_image_index >= self.current_loop*self.batch:
-                    break
-                if temp_image_index > self.current_image_index:
-                    img_path = os.path.join(dir_path, img)
+                if temp_image_index > self.current_image_index: #Если дошли до последнего загруженного элемента
+                    img_path = os.path.join(dir_path, img) #Далее обработка изображения
                     img_from_file = Image.open(img_path)
                     image_array = tf.keras.preprocessing.image.img_to_array(img_from_file)
                     self.images_list.append(image_array)
@@ -55,8 +52,9 @@ class Loader():
                     image_id = image_name.split('e')[-1].split('.')[0]
 
                     foreign_key = self.db_session.query(FoodImage).filter_by(id=int(image_id)).first().recipe_id
+                    # Выбор соответствующего элемена из базы данных
                     recipe = self.db_session.query(Recipe).filter_by(id=foreign_key).first()
-                    if self.column == 'calories':
+                    if self.column == 'calories': # Выбор из базы данных, в зависисимости от заданной колонки
                         self.labels_list.append(recipe.calories)
                     elif self.column == 'total_time':
                         self.labels_list.append(recipe.total_time)
@@ -78,10 +76,13 @@ class Loader():
                         self.labels_list.append(recipe.protein_content)
                     self.current_image_index += 1
                 temp_image_index += 1
-        if self.current_image_index == self.dataset_size-1:
+                if self.current_image_index >= self.current_loop*self.batch: \
+                    # Было загружено нужное количество картинок для текущего цикла загрузки
+                    break
+        if self.current_image_index == self.dataset_size-1: # Если проход по датасету завершен
             self.current_image_index = 0
             self.current_loop = 1
-            if self.current_walkthrough == self.num_epochs:
+            if self.current_walkthrough == self.num_epochs: #Если прошло нужное количество эпох
                 self.is_going = False
             else:
                 self.current_walkthrough += 1

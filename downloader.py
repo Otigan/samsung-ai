@@ -82,13 +82,13 @@ for i in range(len(file_images)):
         for j in range(len(file_instructions[i])):
             temp_instructions += f'{file_instructions[i][j]}_'
         temp_instructions = temp_instructions[:-1]
-        file_instructions[i] = temp_instructions
+        file_instructions[i] = temp_instructions # Преобразование массивов в строки
     except: pass
 
 def start_downloading(position = 0):
     current_image = 0
     for i in range(len(file_images)):
-        if(i >= position):
+        if(i >= position): # Если достигли нужной позиции продолжения скачивания
             try:
                 recipe_to_db = Recipe(id=i+1, calories=file_calories[i], total_time=file_total_time[i],
                           keywords=file_keywords[i], ingredients=file_ingredients[i],
@@ -132,14 +132,14 @@ def start_downloading(position = 0):
                         time.sleep(120)
             except:
                 try:
-                    for j in range(len(file_images[i])):
+                    for j in range(len(file_images[i])): #Если не удалось скачать изображение текущий индекс все равно увеличится
                         current_image += 1
                 except:pass
                 continue
-        else:
+        else: #Если не достигли нужной позиции рецепта
             try:
-                for j in range(len(file_images[i])):
-                    current_image += 1
+                for j in range(len(file_images[i])): # Проход по рецепту
+                    current_image += 1 # Увеличиваем текущий индекс
             except: pass
 
 
@@ -151,7 +151,7 @@ def continue_downloading():
         db_session.query(FoodImage).filter_by(recipe_id=last_recipe_id - 1).delete()
         db_session.query(Recipe).filter_by(id=last_recipe_id).delete()
         db_session.query(Recipe).filter_by(id=last_recipe_id-1).delete()
-        db_session.commit()
+        db_session.commit() # Удаление последних двух записей, которые могли записаться некорректно, из-за прерывания
         start_downloading(position=last_recipe_id-2)
     else:
         start_downloading()
