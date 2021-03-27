@@ -44,6 +44,6 @@ while loader.is_going:
     weights = model.get_weights()
     model = create_model()
     model.set_weights(weights) # preventing memory leak,  creating new model with old weights
-
+model.save('model')
 
 
