@@ -7,7 +7,7 @@ def create_model():
         tf.keras.layers.Conv2D(6, 3, activation='relu', padding='same', input_shape=(224, 224, 3)),
         tf.keras.layers.Conv2D(6, 3, activation='relu', padding='same'),
         tf.keras.layers.Conv2D(6, 3, activation='relu', padding='same'),
-        tf.keras.layers.MaxPool2D(2, ),
+        tf.keras.layers.MaxPool2D(2),
         tf.keras.layers.BatchNormalization(axis=1),
 
         tf.keras.layers.Conv2D(6, 3, activation='relu', padding='same', input_shape=(224, 224, 3)),
@@ -32,13 +32,14 @@ def create_model():
 
 
 loader = Loader(path=f'{os.getcwd()}/Pictures',
-                batch=1000,
+                batch=1280,
                 validation_split=0.2,
                 num_epochs=20,
                 column='calories')
 model = create_model()
 while loader.is_going:
     x, y , val_x, val_y= loader.load_next_data()
+    print(x.shape, y.shape, val_x.shape, val_y.shape)
     tf.keras.backend.clear_session()
     model.fit([x],[y], validation_data=(val_x, val_y), batch_size=64, epochs=1) #should be 1 epoch here. Real number of epochs defines by Loader parameters
     weights = model.get_weights()

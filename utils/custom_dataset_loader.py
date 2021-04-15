@@ -41,8 +41,11 @@ class Loader():
         print(f'epoch {self.current_loop}')
         for dir in os.listdir(self.path):
             dir_path = os.path.join(self.path, dir)
+            if self.current_image_index >= self.current_loop * self.batch: \
+                    # Было загружено нужное количество картинок для текущего цикла загрузки
+                break
             for img in os.listdir(dir_path):
-                if temp_image_index > self.current_image_index:  # Если дошли до последнего загруженного элемента
+                if temp_image_index >= self.current_image_index:  # Если дошли до последнего загруженного элемента
                     img_path = os.path.join(dir_path, img)  # Далее обработка изображения
                     img_from_file = Image.open(img_path)
                     image_array = tf.keras.preprocessing.image.img_to_array(img_from_file)
@@ -82,7 +85,7 @@ class Loader():
                 if self.current_image_index >= self.current_loop * self.batch: \
                         # Было загружено нужное количество картинок для текущего цикла загрузки
                     break
-        if self.current_image_index == self.dataset_size - 1:  # Если проход по датасету завершен
+        if self.current_image_index >= self.dataset_size - 1:  # Если проход по датасету завершен
             self.current_image_index = 0
             self.current_loop = 1
             if self.current_walkthrough == self.num_epochs:  # Если прошло нужное количество эпох
