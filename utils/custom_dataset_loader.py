@@ -12,7 +12,7 @@ import os
 
 
 class Loader():
-    def __init__(self, path, batch, num_epochs, validation_split=0.0, column='calories'):
+    def __init__(self, path, batch, num_epochs, validation_split=0.0, column='calories', stop_number=None):
         self.db_session = init_base()
         self.images_list = []  # Листы для хранения загруженного куска датасета
         self.labels_list = []  #
@@ -30,6 +30,8 @@ class Loader():
             dir_path = os.path.join(self.path, dir)
             for img in os.listdir(dir_path):
                 self.dataset_size += 1  # Цикл для определения размера датасета
+        if stop_number: self.stop_number = stop_number
+        else: stop_number = self.dataset_size
 
     def load_next_data(self):
         self.images_list = []
@@ -85,7 +87,8 @@ class Loader():
                 if self.current_image_index >= self.current_loop * self.batch: \
                         # Было загружено нужное количество картинок для текущего цикла загрузки
                     break
-        if self.current_image_index >= self.dataset_size - 1:  # Если проход по датасету завершен
+        if self.current_image_index >= self.dataset_size - 1 or \
+                self.current_image_index >= self.stop_number - 1:  # Если проход по датасету завершен
             self.current_image_index = 0
             self.current_loop = 1
             if self.current_walkthrough == self.num_epochs:  # Если прошло нужное количество эпох

@@ -3,39 +3,28 @@ import os
 from utils.custom_dataset_loader import Loader
 
 def create_model():
-    model = tf.keras.models.Sequential([
-        tf.keras.layers.Conv2D(6, 3, activation='relu', padding='same', input_shape=(224, 224, 3)),
-        tf.keras.layers.Conv2D(6, 3, activation='relu', padding='same'),
-        tf.keras.layers.Conv2D(6, 3, activation='relu', padding='same'),
-        tf.keras.layers.MaxPool2D(2),
-        tf.keras.layers.BatchNormalization(axis=1),
-
-        tf.keras.layers.Conv2D(6, 3, activation='relu', padding='same', input_shape=(224, 224, 3)),
-        tf.keras.layers.Conv2D(6, 3, activation='relu', padding='same'),
-        tf.keras.layers.Conv2D(6, 3, activation='relu', padding='same'),
-        tf.keras.layers.MaxPool2D(2),
-        tf.keras.layers.BatchNormalization(axis=1),
-
-        tf.keras.layers.Conv2D(12, 3, activation='selu', padding='same'),
-        tf.keras.layers.BatchNormalization(axis=1),
-        tf.keras.layers.MaxPool2D(2),
-
+    model = tf.keras.Sequential([
+        tf.keras.applications.ResNet50(input_shape=(224, 224, 3), include_top=False),
         tf.keras.layers.Flatten(),
-        tf.keras.layers.Dense(1, activation='linear')
+        tf.keras.layers.Dense(1)
     ])
+
     model.compile(
         optimizer=tf.keras.optimizers.Adam(),
-        loss=tf.keras.losses.MeanSquaredLogarithmicError(),
+        loss=tf.keras.losses.MeanSquaredError(),
         metrics=['mae']
     )
     return model
 
 
+
 loader = Loader(path=f'{os.getcwd()}/Pictures',
-                batch=1280,
+                batch=1600,
                 validation_split=0.2,
-                num_epochs=20,
-                column='calories')
+                num_epochs=60,
+                column='calories',
+                stop_number=6400)
+
 model = create_model()
 while loader.is_going:
     x, y , val_x, val_y= loader.load_next_data()
