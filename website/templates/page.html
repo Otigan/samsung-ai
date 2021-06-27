@@ -10,15 +10,17 @@
 
 <body style="background-color: #ccffff;">
     <div class="container bg-white" style="margin-top: 30px; padding: 20px">
+        <h1 style="text-align: center">Сайт для определения калорийности блюда по фотографии</h1>
+        <p style="margin-left: 75px">Загрузите фотографию и получите данные о калорийности:</p>
         <form action="#" method="post" enctype="multipart/form-data">
-            <div class="input-group">
+            <div class="input-group" style="margin-bottom: 20px">
                 <input type="file" name="image" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
                 <button class="btn btn-outline-secondary" type="submit" id="inputGroupFileAddon04">Рассчитать</button>
             </div>
         </form>
 
         <img src={{source}} class="img-thumbnail" alt="food" class="margin-top: 10px; margin-bottom: 100px">
-        <p>  {{calories}}</p>
+        <p style="margin-top: 10px;">  {{calories}}</p>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"
