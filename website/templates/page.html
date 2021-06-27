@@ -5,19 +5,21 @@
           rel="stylesheet"
           integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
           crossorigin="anonymous">
-    <title>Вы хотите кушат?</title>
+    <title>Определить калории</title>
 </head>
-<body>
 
-    <form action="#" method="post" enctype="multipart/form-data">
-        <div class="input-group">
-            <input type="file" name="image" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
-            <button class="btn btn-outline-secondary" type="submit" id="inputGroupFileAddon04">Сколько?</button>
-        </div>
-    </form>
+<body style="background-color: #ccffff;">
+    <div class="container bg-white" style="margin-top: 30px; padding: 20px">
+        <form action="#" method="post" enctype="multipart/form-data">
+            <div class="input-group">
+                <input type="file" name="image" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
+                <button class="btn btn-outline-secondary" type="submit" id="inputGroupFileAddon04">Рассчитать</button>
+            </div>
+        </form>
 
-    <img src={{source}} class="img-thumbnail" alt="food">
-    <p>  {{calories}}</p>
+        <img src={{source}} class="img-thumbnail" alt="food" class="margin-top: 10px; margin-bottom: 100px">
+        <p>  {{calories}}</p>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"
             integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU"
@@ -26,4 +28,5 @@
             integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj"
             crossorigin="anonymous"></script>
 </body>
+
 </html>

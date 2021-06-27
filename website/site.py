@@ -3,7 +3,7 @@ from utils import image_resize
 from PIL import Image
 import os
 import tensorflow as tf
-from flask import jsonify
+import json
 
 model = tf.keras.models.load_model('model') # model.save('model')
 web_site = Flask(__name__)
@@ -26,8 +26,8 @@ def home():
         print(calories[0][0])
         return render_template('page.html',calories=str(calories[0][0])+" Калорий", source=url_for('static', filename='uploaded/'+image.filename))
 
-@web_site.route('/rusya', methods= ['POST'])
-def rusya():
+@web_site.route('/mobile', methods= ['POST'])
+def mobile():
     image = None
     try: image = request.files['image']
     except: pass
@@ -38,13 +38,10 @@ def rusya():
     img.save(os.path.join('static/uploaded', image.filename))
     img = tf.keras.preprocessing.image.img_to_array(img)
     img = img/255
-    print(img)
-    model = tf.keras.models.load_model('model')  # model.save('model')
     calories = model.predict(tf.data.Dataset.from_tensor_slices([img]).batch(1))
     print(calories[0][0])
 
-    if image: to_return = {'result': 'zaebis'}
-    else: to_return = {'result': 'huinya'}
-    return jsonify(to_return)
+    to_return = calories[0][0]
+    return json.dumps(to_return)
 
-web_site.run(debug=True, host='192.168.100.5')
+web_site.run(debug=True, host='192.168.100.3')
